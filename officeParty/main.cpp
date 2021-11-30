@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
+#include <map>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -10,31 +11,41 @@ int main(){
     fin.open("input");
     ofstream fout;
     fout.open("outfile");
-    vector<int> nums;
-    vector<int> flip;
-    int num, it;
-    //make map with int keys and values
-    unordered_map<int, int> numit;
+    vector<string> info;
+    int num, it, n, m;
+    double cashMoney;
+    string gifts, temp, name;
+    getline(fin, temp);
+    n = stoi(temp);
 
-    //add numbers from the input file to vector
-    while(fin >> num){
-        nums.push_back(num);
-    }
-    //go through every number in nums
-    for(int i = 0; i < nums.size(); i++){
-        //if number is not in map, add it
-        if(numit.find(nums[i]) == numit.end()){
-            numit.insert(pair<int, int>(nums[i], 1));
+    //make map with string keys and double values
+    map<string, double> paymoneywubby;
+
+    for(int i = 0; i < n; i++){
+        getline(fin, temp);
+        m = stoi(temp);
+        for(int j = 0; j < m; j++);{
+            getline(fin, gifts);
+            stringstream prices(gifts);
+            info.clear();
+            while(prices >> temp){
+                info.push_back(temp);
+            }
+            if(paymoneywubby.find(info[0]) != paymoneywubby.end()){
+                paymoneywubby.insert(pair<string, double>(info[0], 0));
+            }
+            paymoneywubby[info[0]] -= stod(info[1]);
+
+            for(int x = 2; x < info.size(); x++){
+                if(paymoneywubby.find(info[x]) != paymoneywubby.end()){
+                    paymoneywubby.insert(pair<string, double>(info[x], 0));
+                }
+                paymoneywubby[info[x]] += (stod(info[1])/info.size() - 2);
+            }
         }
-        //if number is in map, add one to the key's value
-        else
-        numit[nums[i]]++;
+        for(const auto &elem : paymoneywubby){
+            fout << elem.first << " " << elem.second << endl;
+        }
+        fout << endl;
+        paymoneywubby.clear();
     }
-    for(auto const &elem : numit){
-        flip.push_back(elem.first);
-        flip.push_back(elem.second);
-    }
-    for(int i = flip.size() - 1; i > 0; i -= 2){
-        fout << flip[i-1] << " " << flip[i] << endl;
-    }
-}
